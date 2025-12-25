@@ -66,7 +66,7 @@ public class MarketDataService {
         LocalDateTime marketOpenTime = currentTime.toLocalDate().atTime(MARKET_OPEN);
         LocalDateTime marketCloseTime = currentTime.toLocalDate().atTime(MARKET_CLOSE);
 
-        return new MarketStatusDto(true, message, currentTime, marketOpenTime, marketCloseTime, EST_ZONE.getId());
+        return new MarketStatusDto(isOpen, message, currentTime, marketOpenTime, marketCloseTime, EST_ZONE.getId());
     }
 
     public boolean isValidSymbol(String symbol) {
