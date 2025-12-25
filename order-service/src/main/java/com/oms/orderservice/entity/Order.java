@@ -42,15 +42,14 @@ public class Order {
     @Column(name = "limit_price", precision = 10, scale = 4)
     private BigDecimal limitPrice;
 
-//    @Transient
-//    @Column(name = "filled_quantity", nullable = false)
-//    private Integer filledQuantity = 0;
+    @Column(name = "filled_quantity")
+    private Integer filledQuantity = 0;
 
-//    @Column(name = "execution_price", precision = 10, scale = 4)
-//    private BigDecimal executionPrice;
-//
-//    @Column(name = "fees", precision = 10, scale = 4)
-//    private BigDecimal fees = BigDecimal.ZERO;
+    @Column(name = "execution_price", precision = 10, scale = 4)
+    private BigDecimal executionPrice;
+
+    @Column(name = "fees", precision = 10, scale = 4)
+    private BigDecimal fees = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)

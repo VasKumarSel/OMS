@@ -38,6 +38,13 @@ public class MarketDataController {
         return ResponseEntity.ok(status);
     }
 
+    @GetMapping("/status/value")
+    public ResponseEntity<Boolean> getMarketStatusValue() {
+        log.debug("Getting market status value");
+        MarketStatusDto status = marketDataService.getMarketStatus();
+        return ResponseEntity.ok(status.isOpen());
+    }
+
     @GetMapping("/validate/{symbol}")
     public ResponseEntity<Boolean> validateSymbol(@PathVariable String symbol) {
         log.debug("Validating symbol: {}", symbol);

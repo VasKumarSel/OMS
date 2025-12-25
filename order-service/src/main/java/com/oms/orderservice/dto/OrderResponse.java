@@ -21,9 +21,9 @@ public class OrderResponse {
     private Integer quantity;
     private OrderType orderType;
     private BigDecimal limitPrice;
-//    private Integer filledQuantity;
-//    private BigDecimal executionPrice;
-//    private BigDecimal fees;
+    private Integer filledQuantity;
+    private BigDecimal executionPrice;
+    private BigDecimal fees;
     private OrderStatus status;
     private String workflowId;
     private LocalDateTime createdAt;

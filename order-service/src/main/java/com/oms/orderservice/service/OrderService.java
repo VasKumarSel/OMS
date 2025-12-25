@@ -31,10 +31,10 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-
     private final OrderHistoryRepository orderHistoryRepository;
-
     private final OrderValidationService orderValidationService;
+    private final TemporalService temporalService;
+    private final OrderStatusService orderStatusService;
 
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request, User currentUser) {
@@ -58,7 +58,19 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         // Create initial history entry
         addOrderHistory(savedOrder.getId(), OrderStatus.PENDING, "Order created");
-        log.info("Order created with ID: {} and workflow ID: {}", savedOrder.getId(), savedOrder.getWorkflowId());
+
+//         Start Temporal workflow for order processing
+        try {
+            String actualWorkflowId = temporalService.startOrderProcessingWorkflow(savedOrder.getId());
+            savedOrder.setWorkflowId(actualWorkflowId);
+            orderRepository.save(savedOrder);
+
+            log.info("Order created with ID: {} and Temporal workflow started: {}", savedOrder.getId(), actualWorkflowId);
+        } catch (Exception e) {
+            log.error("Failed to start workflow for order {}: {}", savedOrder.getId(), e.getMessage());
+            orderStatusService.updateOrderStatus(savedOrder.getId(), OrderStatus.FAILED, "Failed to start processing workflow: " + e.getMessage());
+            throw new RuntimeException("Failed to start order processing workflow", e);
+        }
         return mapToOrderResponse(savedOrder);
     }
 
@@ -101,7 +113,6 @@ public class OrderService {
                 .map(this::mapToOrderHistoryResponse)
                 .toList();
     }
-
 
     private Page<Order> getOrdersForAdmin(OrderStatus status, String symbol, Pageable pageable) {
         if (status != null && symbol != null) {
@@ -151,9 +162,9 @@ public class OrderService {
                 order.getQuantity(),
                 order.getOrderType(),
                 order.getLimitPrice(),
-//                order.getFilledQuantity(),
-//                order.getExecutionPrice(),
-//                order.getFees(),
+                order.getFilledQuantity(),
+                order.getExecutionPrice(),
+                order.getFees(),
                 order.getStatus(),
                 order.getWorkflowId(),
                 order.getCreatedAt(),
