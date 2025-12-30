@@ -74,23 +74,21 @@ public class OrderValidationService {
     }
 
     public void validateMarketHours() {
-        /*
+
         try {
-            MarketStatusDto status = marketDataWebClient
+            Boolean isOpen = marketDataWebClient
                     .get()
-                    .uri("/api/v1/market/status")
+                    .uri("/api/v1/market/status/value")
                     .retrieve()
-                    .bodyToMono(MarketStatusDto.class)
+                    .bodyToMono(Boolean.class)
                     .timeout(Duration.ofSeconds(3))
                     .block();
-
-            if (!status.isOpen()) {
-                throw new IllegalArgumentException("Market is closed: " + status.getMessage());
+            if (!Boolean.TRUE.equals(isOpen)) {
+                throw new IllegalArgumentException("Market is closed: ");
             }
         } catch (Exception e) {
-            log.warn("Failed to check market status: {}", e.getMessage());
-            // For now, allow orders even if market status check fails
+            log.warn("Failed to validate market hours {} with Market Data Service: {}");
+            throw new IllegalArgumentException("market hours: ");
         }
-        */
     }
 }
